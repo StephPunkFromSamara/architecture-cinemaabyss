@@ -1,0 +1,82 @@
+ @startuml
+ !include C4_Container.puml
+ Person(user, "Person", "Пользователь ")
+
+ System_Boundary(streamingService, "Kinobezdna") {
+    Container(mobApp, "Kinobezdna mobile App", "Kotlin", "Общий контейнер, подгружает микрофронтенды")
+    Container(smartTVApp, "Kinobezdna mobile App", "Kotlin", "Общий контейнер, подгружает микрофронтенды")
+    Container(webApp, "Kinobezdna Shell SPA", "React", "Общий контейнер, подгружает микрофронтенды")
+
+    Container(userUI, "User UI", "angular" , "Интерфейс авторизации и профиля пользователя")
+    Container(player, "Player UI", "angular" , "Плеер для просмотра")
+    Container(catalogUI, "Catralog UI", "React" , "Пользовательский интерфейс каталога фильмов")
+    Container(subcribeUI, "Subcribe UI", "React" , "Управление подпиской")
+    Container(paymentUI, "Payment UI", "React" , "Управление платежной информацией")
+
+    Container(gateway, "API Gateway", "Nginx / Kong", "Роутинг и аутентификация запросов")
+
+    Container(users, "Users & Auth", "GO" , "Хранение данных пользователей и авторизация")
+    ContainerDb(usersDB,"User Data","PostgreSQL","Хранение данных о пользователях")
+
+    Container(metadataOfFilms, "DataOfFilms", "GO" , "Обработка каталогом")
+    ContainerDb(metadataOfFilmsDB,"DataOfFilms","PostgreSQL","Хранение данных о фильмах")
+
+    Container(streamingContent, "Content", "GO" , "Транслирует контент")
+    ContainerDb(streamingDB,"StreamingData","PostgreSQL","Хранение данных о фильмах и видеофайлах")
+
+    Container(recomendation, "Adater Recomendation System", "GO" , "Интеграция с рекомендательной системой")
+
+    Container(paymentService, "Payment", "GO" , "Сервис по работе с платежами")
+    ContainerDb(paymentServiceDB,"Payment Data","GO","Платежная информация")
+
+    Container(subscribeService, "Subcribe", "GO" , "Хранение данных и управление подписки")
+    ContainerDb(subscribeDB,"Subscribe Data","PostgreSQL","Хранение данных о подписках")
+
+    ContainerQueue(broker, "Брокер сообщений", "Apache Kafka", "Транслирует метрики датчиков и пакеты видео с камер")
+   }
+   System_Ext(paymentSystem , "Платежная система","Внешняя платежная система")
+   System_Ext(rabbitMQ , "Rabbit MQ","Внешний брокер сообщений")
+   System_Ext(s3, "Data Storage S3","Хранилище видеофайлов")
+   System_Ext(recomendationSystem, "Recomendation System","Рекомендательная система")
+ }
+  Rel(user, webApp, "Посещает страницу стримиингово сервиса")
+  Rel(user, mobApp, "Открывает приложение на телефоне")
+  Rel(user, smartTVApp, "Открывает приложение на телевизоре")
+
+  Rel(webApp,userUI, "Посещает страницу стримиингово сервиса", "API")
+  Rel(webApp,player, "Загрузка плеера в интерфейса", "API")
+  Rel(webApp,catalogUI, "Загрузка интерфейса каталога", "API")
+  Rel(webApp,paymentUI,"Загрузка управление платежами","API")
+  Rel(webApp,subcribeUI,"Загрузка управление управление подпиской","API")
+
+  Rel(smartTVApp,gateway , "Запрос к сервисам через gateway","REST API/JSON")
+  Rel(userUI,gateway , "Запрос к сервисам через gateway","REST API/JSON")
+  Rel(player,gateway , "Запрос к сервисам через gateway","REST API/JSON")
+  Rel(catalogUI,gateway , "Запрос к сервисам через gateway","REST API/JSON")
+  Rel(mobApp,gateway , "Запрос к сервисам через gateway","REST API/JSON")
+  Rel(catalogUI,gateway , "Запрос к сервисам через gateway","REST API/JSON")
+
+  Rel(gateway,users , "Чтение и запись о пользователях","REST API/JSON")
+  Rel(gateway,subscribeService , "Запрос к сервисам","REST API/JSON")
+  Rel(gateway,streamingContent , "Запрос к сервисам","REST API/JSON")
+  Rel(gateway,metadataOfFilms , "Запрос к сервисам","REST API/JSON")
+  Rel(gateway,paymentService, "Запрос к сервисам","REST API/JSON")
+
+  Rel(broker,recomendation,"Получение данных для пользователя","JSON/KAFKA PROTOCOL")
+  Rel(users,broker,"Отправка данных о пользователях","JSON/KAFKA PROTOCOL")
+  Rel(broker,subscribeService,"Подписка данных по пользователе","JSON/KAFKA PROTOCOL")
+  Rel(broker,paymentService,"Подписка данных о пользователях","JSON/KAFKA PROTOCOL")
+
+  Rel(recomendation,rabbitMQ,"Отправка данных от просмотренных фильмах","JSON/HTTP")
+  Rel(rabbitMQ,recomendationSystem,"Внутренее взаимодействия","JSON/HTTP")
+
+  Rel(paymentService,paymentServiceDB , "Чтение и запись платежной информации","PGX")
+  Rel(subscribeService,subscribeDB , "Чтение и запись о подписках","PGX")
+  Rel(streamingContent,s3 , "Запрос к сервисам","File API")
+  Rel(metadataOfFilms,metadataOfFilmsDB , "Запрос к сервисам","PGX")
+  Rel(users,usersDB , "Чтение и запись о пользователях","PGX")
+  Rel(streamingContent,streamingDB,"Чтение и запись данных о сохраненных файлах и фильмах","PGX" )
+
+
+ @enduml
+
