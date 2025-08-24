@@ -57,4 +57,4 @@ def create_event(event_type: str, payload: dict):
 
 @app.get("/api/events/health")
 def health():
-    return {"ok": True}
+    return {"status": True}
