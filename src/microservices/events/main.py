@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,status
 from confluent_kafka import Producer, Consumer, KafkaError
 import threading
 import json
@@ -45,7 +45,7 @@ for topic in TOPICS:
 
 
 # API endpoints to produce events
-@app.post("/api/events/{event_type}")
+@app.post("/api/events/{event_type}", status_code=status.HTTP_201_CREATED)
 def create_event(event_type: str, payload: dict):
     if event_type not in ["user", "payment", "movie"]:
         return {"error": "Invalid event type"}
@@ -53,8 +53,8 @@ def create_event(event_type: str, payload: dict):
     producer.produce(topic, json.dumps(payload).encode('utf-8'))
     producer.flush()
     logging.info(f"Produced event to {topic}: {payload}")
-    return {"status": "sent", "topic": topic, "payload": payload}
+    return {"status": "success", "topic": topic, "payload": payload}
 
 @app.get("/api/events/health")
 def health():
-    return {"status": "ok"}
+    return {"ok": True}
