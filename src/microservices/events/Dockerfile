@@ -17,4 +17,4 @@ COPY . /app
 ENV PORT=8082
 
 # Запуск FastAPI через Uvicorn на 0.0.0.0:8082
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8082"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "$PORT"]
