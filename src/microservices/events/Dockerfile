@@ -13,8 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем весь код приложения
 COPY . /app
 
-# Указываем переменную окружения для порта (совпадает с Deployment)
-ENV PORT=8082
+
 
 # Запуск FastAPI через Uvicorn на 0.0.0.0:8082
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "$PORT"]
+CMD ["python", "main.py"]
