@@ -16,4 +16,4 @@ COPY . /app
 
 
 # Запуск FastAPI через Uvicorn на 0.0.0.0:8082
-CMD ["python", "main.py"]
+ENTRYPOINT ["python", "-u", "main.py"]
