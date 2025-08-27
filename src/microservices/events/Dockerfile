@@ -16,4 +16,4 @@ COPY . /app
 
 
 # Запуск FastAPI через Uvicorn на 0.0.0.0:8082
-ENTRYPOINT ["python", "-u", "main.py"]
+ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8082"]

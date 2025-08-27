@@ -59,6 +59,3 @@ def create_event(event_type: str, payload: dict):
 def health():
     return {"status": True}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8082)
