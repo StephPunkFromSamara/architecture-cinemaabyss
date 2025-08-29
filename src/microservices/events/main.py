@@ -3,13 +3,12 @@ from confluent_kafka import Producer, Consumer, KafkaError
 import threading
 import json
 import logging
-import os
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
 # Конфиг Kafka
-KAFKA_BROKER = os.getenv("KAFKA_SERVICE_HOST", "kafka:9092")
+KAFKA_BROKER = "kafka:9092"
 TOPICS = ["user_events", "payment_events", "movie_events"]
 
 # Producer
@@ -43,36 +42,30 @@ for topic in TOPICS:
     t = threading.Thread(target=consume_topic, args=(topic,), daemon=True)
     t.start()
 
+# API для продюсинга событий
+@app.post("/api/events/{event_type}", status_code=status.HTTP_201_CREATED)
+def create_event(event_type: str, payload: dict):
+    if event_type not in ["user", "payment", "movie"]:
+        raise HTTPException(status_code=400, detail="Invalid event type")
+    topic = f"{event_type}_events"
+    try:
+        producer.produce(topic, json.dumps(payload).encode('utf-8'))
+        producer.flush()
+        logging.info(f"Produced event to {topic}: {payload}")
+    except Exception as e:
+        logging.error(f"Failed to produce event: {e}")
+        raise HTTPException(status_code=500, detail="Failed to produce event")
+    return {"status": "success", "topic": topic, "payload": payload}
+
+# Health endpoint для Event сервиса (Ingress)
+@app.get("/api/events/health")
+def events_health():
+    return {"status": True}
+
 # Общий health check
 @app.get("/health")
 def general_health():
     return {"status": "ok"}
-
-# Проверка, включать ли Event API
-GRADUAL_MIGRATION = os.getenv("GRADUAL_MIGRATION", "false").lower() == "true"
-
-if GRADUAL_MIGRATION:
-    logging.info("Event API endpoints are enabled.")
-
-    @app.get("/api/events/health")
-    def events_health():
-        return {"status": True}
-
-    @app.post("/api/events/{event_type}", status_code=status.HTTP_201_CREATED)
-    def create_event(event_type: str, payload: dict):
-        if event_type not in ["user", "payment", "movie"]:
-            raise HTTPException(status_code=400, detail="Invalid event type")
-        topic = f"{event_type}_events"
-        try:
-            producer.produce(topic, json.dumps(payload).encode('utf-8'))
-            producer.flush()
-            logging.info(f"Produced event to {topic}: {payload}")
-        except Exception as e:
-            logging.error(f"Failed to produce event: {e}")
-            raise HTTPException(status_code=500, detail="Failed to produce event")
-        return {"status": "success", "topic": topic, "payload": payload}
-else:
-    logging.info("Event API endpoints are disabled.")
 
 if __name__ == "__main__":
     import uvicorn
