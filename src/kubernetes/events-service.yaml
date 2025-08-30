@@ -10,11 +10,6 @@ spec:
   selector:
     matchLabels:
       app: events-service
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
   template:
     metadata:
       labels:
@@ -22,46 +17,20 @@ spec:
     spec:
       containers:
         - name: events-service
-          image: ghcr.io/stephpunkfromsamara/architecture-cinemaabyss/events-service:sha-e364e6d@sha256:4fac78dd94a7b3150bbd13780d466d9bbef3116d9fdee0686ca2dfb95241f26e
-          imagePullPolicy: Always
+          image: ghcr.io/stephpunkfromsamara/architecture-cinemaabyss/events-service:sha-2d28435@sha256:29599471083d27bf0cc6458bd046e1f5b4a319f68471448f9f088048c32397b8
           ports:
-            - containerPort: 8000
-          env:
-            - name: PORT
-              value: "8000"
-            - name: DB_CONNECTION_STRING
-              value: "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable"
-          envFrom:
-            - configMapRef:
-                name: cinemaabyss-config
-            - secretRef:
-                name: cinemaabyss-secrets
-          resources:
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
-            requests:
-              cpu: "250m"
-              memory: "256Mi"
+            - containerPort: 8082
           readinessProbe:
             httpGet:
-              path: /api/events/health
-              port: 8000
-            initialDelaySeconds: 20
+              path: api/events/health
+              port: 8082
+            initialDelaySeconds: 5
             periodSeconds: 10
-            timeoutSeconds: 2
-            failureThreshold: 5
           livenessProbe:
             httpGet:
-              path: /api/events/health
-              port: 8000
-            initialDelaySeconds: 40
-            periodSeconds: 20
-            timeoutSeconds: 2
-            failureThreshold: 5
+              path: api/events/health
+              port: 8082
       restartPolicy: Always
-      imagePullSecrets:
-        - name: dockerconfigjson
 ---
 apiVersion: v1
 kind: Service
@@ -72,6 +41,6 @@ spec:
   selector:
     app: events-service
   ports:
-    - port: 8000
-      targetPort: 8000
+    - port: 8082
+      targetPort: 8082
   type: ClusterIP

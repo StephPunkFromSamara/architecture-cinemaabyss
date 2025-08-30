@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: proxy-service
-          image: ghcr.io/stephpunkfromsamara/architecture-cinemaabyss/proxy-service:sha-e364e6d@sha256:bde71e6e449fd13793b22765f358380cf5b90aa99aa9414f46334b82b92b818f
+          image: ghcr.io/stephpunkfromsamara/architecture-cinemaabyss/proxy-service:sha-5f03b20@sha256:d0099c75783118365821df091cf1f9cde8cfb665b0264d472eb3e31719958dad
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
