@@ -7,9 +7,9 @@ from fastapi.responses import Response
 app = FastAPI()
 
 # Читаем переменные окружения
-MONOLITH_URL = os.getenv("MONOLITH_URL", "http://monolith:8080")
-MOVIES_SERVICE_URL = os.getenv("MOVIES_SERVICE_URL", "http://movies-service:8081")
-EVENTS_SERVICE_URL = os.getenv("EVENTS_SERVICE_URL", "http://events-service:8082")
+MONOLITH_URL = os.environ["MONOLITH_URL"]
+MOVIES_SERVICE_URL = os.environ["MOVIES_SERVICE_URL"]
+EVENTS_SERVICE_URL = os.environ["EVENTS_SERVICE_URL"]
 
 GRADUAL_MIGRATION = os.getenv("GRADUAL_MIGRATION", "false").lower() == "true"
 MOVIES_MIGRATION_PERCENT = int(os.getenv("MOVIES_MIGRATION_PERCENT", "0"))
