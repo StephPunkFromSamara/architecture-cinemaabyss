@@ -54,7 +54,7 @@ proxyService:
   enabled: true
   image:
     repository: ghcr.io/stephpunkfromsamara/architecture-cinemaabyss/proxy-service
-    tag: sha-2d28435@sha256:47b6ddba6999ca45484ec854d3babf03dfcd1e9a1f193c04c82f84350ee1367e
+    tag: sha-0d08dad@sha256:5abd5dce1cf5495ab17a3aab72890ba0fbdfedbafa5b66316ace9c27db9c5c10
     pullPolicy: Always
   replicas: 1
   env:
@@ -130,6 +130,11 @@ kafka:
     enabled: true
     size: 5Gi
     accessMode: ReadWriteOnce
+  env:
+    KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+    KAFKA_BROKER_ID: 0
+    KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
   topics:
     - name: movie-events
       partitions: 1

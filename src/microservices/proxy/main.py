@@ -37,10 +37,10 @@ async def proxy(path: str, request: Request):
         else:
             print("[PROXY] Migration OFF → monolith")
 
-     📅 Пока events остаётся в монолите (тесты падают на events по условию задания)
-        if path.startswith("api/events"):
-         target_url = f"{MONOLITH_URL}/{path}"
-     print("[PROXY] Events → монолит")
+     #📅 Пока events остаётся в монолите (тесты падают на events по условию задания)
+      #  if path.startswith("api/events"):
+       #  target_url = f"{MONOLITH_URL}/{path}"
+     #print("[PROXY] Events → монолит")
 
     # Проксируем запрос
     async with httpx.AsyncClient() as client:
