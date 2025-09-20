@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: events-service
+  namespace: cinemaabyss
+  labels:
+    app: events-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: events-service
+  template:
+    metadata:
+      labels:
+        app: events-service
+    spec:
+      containers:
+        - name: events-service
+          image: ghcr.io/stephpunkfromsamara/architecture-cinemaabyss/events-service:sha-2d28435@sha256:29599471083d27bf0cc6458bd046e1f5b4a319f68471448f9f088048c32397b8
+          ports:
+            - containerPort: 8082
+          readinessProbe:
+            httpGet:
+              path: api/events/health
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: api/events/health
+              port: 8082
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: events-service
+  namespace: cinemaabyss
+spec:
+  selector:
+    app: events-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+  type: ClusterIP

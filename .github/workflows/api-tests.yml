@@ -1,10 +1,20 @@
 name: API Tests
 
+
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, сinema ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, cinema ]
+
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      test_folder:
+        required: false
+        type: string
   workflow_dispatch:
     inputs:
       environment:

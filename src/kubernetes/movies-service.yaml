@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: movies-service
-        image: ghcr.io/db-exp/cinemaabysstest/movies-service:latest
+        image: ghcr.io/stephpunkfromsamara/architecture-cinemaabyss/movies-service:sha-e364e6d@sha256:d5495024265316273d933f8d9664c598ad64cb98964775d83d4bb4b3f8e756f7
         imagePullPolicy: Always
         ports:
         - containerPort: 8081
